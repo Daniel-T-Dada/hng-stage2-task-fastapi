@@ -1,0 +1,12 @@
+[Unit]
+Description=FastAPI Book Application
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/hng-stage2-task-fastapi
+Environment="PATH=/home/ubuntu/hng-stage2-task-fastapi/venv/bin"
+ExecStart=/home/ubuntu/hng-stage2-task-fastapi/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+
+[Install]
+WantedBy=multi-user.target 
