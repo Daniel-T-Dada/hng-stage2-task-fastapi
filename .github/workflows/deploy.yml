@@ -12,14 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add host key
+      - name: Install SSH key
         run: |
           mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
@@ -27,4 +24,4 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
-          ssh $SERVER_USER@$SERVER_IP 'cd ~/hng-stage2-task-fastapi && git pull origin main && source venv/bin/activate && pip install -r requirements.txt && sudo systemctl restart fastapi'
+          ssh -i ~/.ssh/id_ed25519 $SERVER_USER@$SERVER_IP 'cd ~/hng-stage2-task-fastapi && git pull origin main && source venv/bin/activate && pip install -r requirements.txt && sudo systemctl restart fastapi'
